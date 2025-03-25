@@ -105,14 +105,14 @@ class ConsumeSplunkProcessor(FlowFileSource):
 			optionalProps = " ".join((optionalProps,"-maxout",self.max_output))
 		if self.splunk_user != "":
 			if self.splunk_pw != None:
-				optionalProps = " ".join((optionalProps,"-auth",self.splunk_user,":",self.splunk_pw))
+				optionalProps = " ".join((optionalProps,"-auth \'",self.splunk_user,":",self.splunk_pw,"\'"))
 			else:
 				self.logger.error("Splunk user account provided, but password is missing. Please update account properties.")
 		return optionalProps
     	
 	def buildAndRunQuery(self):
 		try:
-			queryString = "".join((self.splunk_install_dir.rstrip("/"),"/bin/splunk search \"index=_",self.buildSearchParams(),"\" -output ",self.output_format,self.addOptionalProperties()))
+			queryString = "".join((self.splunk_install_dir.rstrip("/"),"/bin/splunk search \"index=",self.buildSearchParams(),"\" -output ",self.output_format,self.addOptionalProperties()))
 			cmdOutput = subprocess.run([queryString],  shell=True, capture_output=True, encoding='utf-8', text=True)
 			if cmdOutput.stderr == "":
 				return cmdOutput.stdout
